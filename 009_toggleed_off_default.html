@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cytoscape.js Graph with Node Types Toggle</title>
+  <script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
+  <style>
+    #cy {
+      width: 800px;
+      height: 600px;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <h1>Cytoscape.js Graph with Node Types Toggle</h1>
+  <p>Toggle the visibility of nodes based on their types:</p>
+  <label><input type="checkbox" id="type1Toggle" checked>Type 1 Nodes</label>
+  <label><input type="checkbox" id="type2Toggle" checked>Type 2 Nodes</label>
+  <label><input type="checkbox" id="type3Toggle">Type 3 Nodes</label>
+  <div id="cy"></div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function(){
+      // Create the cytoscape instance
+      var cy = window.cy = cytoscape({
+        container: document.getElementById('cy'),
+        elements: [
+          // Define nodes and edges with types
+          { data: { id: 'node1', type: 'type1' } },
+          { data: { id: 'node2', type: 'type2' } },
+          { data: { id: 'node3', type: 'type3' } },
+          { data: { id: 'node4', type: 'type1' } },
+          { data: { id: 'node5', type: 'type2' } },
+          { data: { id: 'node6', type: 'type3' } },
+          { data: { id: 'node7', type: 'type1' } },
+          { data: { id: 'node8', type: 'type2' } },
+          { data: { id: 'node9', type: 'type3' } },
+          { data: { id: 'edge1', source: 'node1', target: 'node2', type: 'edgeType' } },
+          { data: { id: 'edge2', source: 'node2', target: 'node3', type: 'edgeType' } },
+          { data: { id: 'edge3', source: 'node3', target: 'node4', type: 'edgeType' } },
+          { data: { id: 'edge4', source: 'node4', target: 'node5', type: 'edgeType' } },
+          { data: { id: 'edge5', source: 'node5', target: 'node6', type: 'edgeType' } },
+          { data: { id: 'edge6', source: 'node6', target: 'node7', type: 'edgeType' } },
+          { data: { id: 'edge7', source: 'node7', target: 'node8', type: 'edgeType' } },
+          { data: { id: 'edge8', source: 'node8', target: 'node9', type: 'edgeType' } }
+        ],
+        style: [
+          // Define styles for different types
+          {
+            selector: 'node[type="type1"]',
+            style: {
+              'background-color': 'red',
+              'label': 'Type 1'
+            }
+          },
+          {
+            selector: 'node[type="type2"]',
+            style: {
+              'background-color': 'blue',
+              'label': 'Type 2'
+            }
+          },
+          {
+            selector: 'node[type="type3"]',
+            style: {
+              'background-color': 'green',
+              'label': 'Type 3'
+            }
+          },
+          {
+            selector: 'edge[type="edgeType"]',
+            style: {
+              'width': 2,
+              'line-color': 'black',
+              'label': 'Edge'
+            }
+          }
+        ],
+        layout: {
+          name: 'grid'
+        }
+      });
+
+      // Toggle nodes based on type
+      document.getElementById('type1Toggle').addEventListener('change', function(){
+        var type1Nodes = cy.nodes('[type="type1"]');
+        if (this.checked) {
+          type1Nodes.show();
+        } else {
+          type1Nodes.hide();
+        }
+      });
+
+      document.getElementById('type2Toggle').addEventListener('change', function(){
+        var type2Nodes = cy.nodes('[type="type2"]');
+        if (this.checked) {
+          type2Nodes.show();
+        } else {
+          type2Nodes.hide();
+        }
+      });
+
+      document.getElementById('type3Toggle').addEventListener('change', function(){
+        var type3Nodes = cy.nodes('[type="type3"]');
+        if (this.checked) {
+          type3Nodes.show();
+        } else {
+          type3Nodes.hide();
+        }
+      });
+      var type3Nodes = cy.nodes('[type="type3"]');
+      type3Nodes.hide();
+
+
+    });
+  </script>
+</body>
+</html>

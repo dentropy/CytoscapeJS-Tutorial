@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cytoscape.js Example</title>
+  <script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
+  <style>
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    #cy {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    #deselectButton {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 8px 16px;
+      background-color: #ccc;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    #cy {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    #metadata {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background-color: white;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      cursor: move;
+      z-index: 999;
+    }
+
+    #metadata.draggable {
+      cursor: move;
+    }
+
+    #metadata .toggle-btn {
+      cursor: pointer;
+      float: right;
+    }
+
+    #metadata.collapsed {
+      height: 30px;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+  <div id="cy"></div>
+  <div id="metadata"></div>
+  <button id="deselectButton">Deselect All</button>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function(){
+      var cy = window.cy = cytoscape({
+        container: document.getElementById('cy'),
+        
+        elements: [ // list of graph elements to start with
+          { // node a
+            data: { 
+              id: 'a', 
+              label: 'Node A', 
+              metadata: { 
+                description: 'Additional metadata for Node A', 
+                details: { 
+                  weight: 10, 
+                  color: 'blue' 
+                } 
+              } 
+            }
+          },
+          { // node b
+            data: { 
+              id: 'b', 
+              label: 'Node B', 
+              metadata: { 
+                description: 'Additional metadata for Node B', 
+                details: { 
+                  weight: 20, 
+                  color: 'red' 
+                } 
+              } 
+            }
+          },
+          { // node c
+            data: { 
+              id: 'c', 
+              label: 'Node C', 
+              metadata: { 
+                description: 'Additional metadata for Node C', 
+                details: { 
+                  weight: 15, 
+                  color: 'green' 
+                } 
+              } 
+            }
+          },
+          { // node d
+            data: { 
+              id: 'd', 
+              label: 'Node D', 
+              metadata: { 
+                description: 'Additional metadata for Node D', 
+                details: { 
+                  weight: 25, 
+                  color: 'yellow' 
+                } 
+              } 
+            }
+          },
+          { // node e
+            data: { 
+              id: 'e', 
+              label: 'Node E', 
+              metadata: { 
+                description: 'Additional metadata for Node E', 
+                details: { 
+                  weight: 18, 
+                  color: 'purple' 
+                } 
+              } 
+            }
+          },
+          { // edge ab
+            data: { 
+              id: 'ab', 
+              source: 'a', 
+              target: 'b', 
+              metadata: { 
+                description: 'Additional metadata for Edge AB', 
+                details: { 
+                  length: 100 
+                } 
+              } 
+            }
+          },
+          { // edge ac
+            data: { 
+              id: 'ac', 
+              source: 'a', 
+              target: 'c', 
+              metadata: { 
+                description: 'Additional metadata for Edge AC', 
+                details: { 
+                  length: 80 
+                } 
+              } 
+            }
+          },
+          { // edge bd
+            data: { 
+              id: 'bd', 
+              source: 'b', 
+              target: 'd', 
+              metadata: { 
+                description: 'Additional metadata for Edge BD', 
+                details: { 
+                  length: 120 
+                } 
+              } 
+            }
+          },
+          { // edge cd
+            data: { 
+              id: 'cd', 
+              source: 'c', 
+              target: 'd', 
+              metadata: { 
+                description: 'Additional metadata for Edge CD', 
+                details: { 
+                  length: 90 
+                } 
+              } 
+            }
+          },
+          { // edge ce
+            data: { 
+              id: 'ce', 
+              source: 'c', 
+              target: 'e', 
+              metadata: { 
+                description: 'Additional metadata for Edge CE', 
+                details: { 
+                  length: 60 
+                } 
+              } 
+            }
+          },
+          { // edge de
+            data: { 
+              id: 'de', 
+              source: 'd', 
+              target: 'e', 
+              metadata: { 
+                description: 'Additional metadata for Edge DE', 
+                details: { 
+                  length: 70 
+                } 
+              } 
+            }
+          }
+        ],
+        
+        style: [ // the stylesheet for the graph
+          {
+            selector: 'node',
+            style: {
+              'background-color': '#666',
+              'label': 'data(label)'
+            }
+          },
+          {
+            selector: 'edge',
+            style: {
+              'width': 3,
+              'line-color': '#ccc',
+              'target-arrow-color': '#ccc',
+              'target-arrow-shape': 'triangle'
+            }
+          },
+          {
+            selector: ':selected',
+            style: {
+              'background-color': 'green',
+              'line-color': 'green',
+              'target-arrow-color': 'green',
+              'transition-property': 'background-color, line-color, target-arrow-color',
+              'transition-duration': '0.5s'
+            }
+          }
+        ],
+        
+        layout: {
+          name: 'grid'
+        }
+      });
+
+      function displayMetadata(elements) {
+        var metadataHTML = '';
+        elements.forEach(function(element) {
+          if (element.isNode()) {
+            metadataHTML += '<strong>' + element.data('label') + '</strong><br><pre>' + JSON.stringify(element.data('metadata'), null, 2) + '</pre><br>';
+          } else if (element.isEdge()) {
+            metadataHTML += '<strong>Edge</strong><br><pre>' + JSON.stringify(element.data('metadata'), null, 2) + '</pre><br>';
+            metadataHTML += 'Source: ' + element.data('source') + '<br>';
+            metadataHTML += 'Target: ' + element.data('target') + '<br><br>';
+          }
+        });
+        document.getElementById('metadata').innerHTML = metadataHTML;
+      }
+
+      cy.on('select', function(event) {
+        var selectedNodes = cy.$('node:selected');
+        var selectedEdges = cy.$('edge:selected');
+        var selectedElements = selectedNodes.add(selectedEdges);
+        displayMetadata(selectedElements);
+      });
+
+      cy.on('unselect', function(event) {
+        var selectedNodes = cy.$('node:selected');
+        var selectedEdges = cy.$('edge:selected');
+        var selectedElements = selectedNodes.add(selectedEdges);
+        displayMetadata(selectedElements);
+      });
+
+      document.getElementById('deselectButton').addEventListener('click', function() {
+        cy.$(':selected').unselect();
+      });
+
+      document.addEventListener('DOMContentLoaded', function(){
+      var cy = window.cy = cytoscape({
+        container: document.getElementById('cy'),
+        
+        elements: [ // list of graph elements to start with
+          // Your graph elements here
+        ],
+        
+        style: [ // the stylesheet for the graph
+          // Your styles here
+        ],
+        
+        layout: {
+          name: 'grid'
+        }
+      });
+
+      function displayMetadata(elements) {
+        var metadataHTML = '';
+        elements.forEach(function(element) {
+          if (element.isNode()) {
+            metadataHTML += '<strong>' + element.data('label') + '</strong><br><pre>' + JSON.stringify(element.data('metadata'), null, 2) + '</pre><br>';
+          } else if (element.isEdge()) {
+            metadataHTML += '<strong>Edge</strong><br><pre>' + JSON.stringify(element.data('metadata'), null, 2) + '</pre><br>';
+            metadataHTML += 'Source: ' + element.data('source') + '<br>';
+            metadataHTML += 'Target: ' + element.data('target') + '<br><br>';
+          }
+        });
+        document.getElementById('metadata-content').innerHTML = metadataHTML;
+      }
+
+      cy.on('select', function(event) {
+        var selectedNodes = cy.$('node:selected');
+        var selectedEdges = cy.$('edge:selected');
+        var selectedElements = selectedNodes.add(selectedEdges);
+        displayMetadata(selectedElements);
+      });
+
+      cy.on('unselect', function(event) {
+        var selectedNodes = cy.$('node:selected');
+        var selectedEdges = cy.$('edge:selected');
+        var selectedElements = selectedNodes.add(selectedEdges);
+        displayMetadata(selectedElements);
+      });
+    });
+
+    // Toggle metadata visibility
+    function toggleMetadata() {
+      var metadata = document.getElementById('metadata');
+      metadata.classList.toggle('collapsed');
+      var toggleBtn = document.querySelector('#metadata .toggle-btn');
+      toggleBtn.textContent = metadata.classList.contains('collapsed') ? '+' : '-';
+    }
+
+    // Make metadata draggable
+    var isDragging = false;
+    var metadata = document.getElementById('metadata');
+    metadata.addEventListener('mousedown', function(e) {
+      isDragging = true;
+      var offsetX = e.clientX - metadata.offsetLeft;
+      var offsetY = e.clientY - metadata.offsetTop;
+      document.addEventListener('mousemove', function(e) {
+        if (isDragging) {
+          var x = e.clientX - offsetX;
+          var y = e.clientY - offsetY;
+          metadata.style.left = x + 'px';
+          metadata.style.top = y + 'px';
+        }
+      });
+    });
+
+    document.addEventListener('mouseup', function() {
+      isDragging = false;
+    });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cytoscape.js Graph with Legend</title>
+  <script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
+  <style>
+    #cy {
+      width: 100%;
+      height: 600px;
+      display: block;
+    }
+    .legend {
+      margin-top: 20px;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+    .legend-item span {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      margin-right: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div id="cy"></div>
+  <div class="legend">
+    <div class="legend-item">
+      <span style="background-color: red;"></span>
+      Type A
+    </div>
+    <div class="legend-item">
+      <span style="background-color: blue;"></span>
+      Type B
+    </div>
+    <!-- Add more legend items as needed -->
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var cy = window.cy = cytoscape({
+        container: document.getElementById('cy'),
+        elements: [
+          { data: { id: 'node1', type: 'A' } },
+          { data: { id: 'node2', type: 'B' } },
+          // Add more nodes with different types as needed
+        ],
+        style: [
+          {
+            selector: 'node',
+            style: {
+              'background-color': function (ele) {
+                var type = ele.data('type');
+                return type === 'A' ? 'red' : 'blue'; // Define colors based on types
+              }
+            }
+          }
+        ],
+        layout: {
+          name: 'grid'
+        }
+      });
+    });
+  </script>
+</body>
+</html>

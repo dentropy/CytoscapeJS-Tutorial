@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cytoscape.js Example</title>
+  <script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
+  <script src="https://unpkg.com/jquery/dist/jquery.min.js"></script>
+  <script src="./cytoscapeElements.js"></script>
+  <style>
+    #cy {
+      width: 80%;
+      height: 600px;
+      display: block;
+      float: left;
+    }
+
+    #control-panel {
+      width: 20%;
+      height: 600px;
+      display: block;
+      float: left;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+<div id="cy"></div>
+<div id="control-panel">
+  <h3>Node Type Toggle</h3>
+  <label><input type="checkbox" id="type1-checkbox" class="type-checkbox" value="type1" checked> Type 1</label><br>
+  <label><input type="checkbox" id="type2-checkbox" class="type-checkbox" value="type2" checked> Type 2</label><br>
+  <label><input type="checkbox" id="type3-checkbox" class="type-checkbox" value="type3" checked> Type 3</label><br>
+  <h3>Edge Toggle</h3>
+  <label><input type="checkbox" id="remove-edges-checkbox" class="edge-checkbox" value="remove-edges" checked> Remove Edges</label><br>
+  <label><input type="checkbox" id="add-edges-checkbox" class="edge-checkbox" value="add-edges" checked> Add Edges</label><br>
+</div>
+
+<script>
+  $(function(){
+    var cy = window.cy = cytoscape({
+      container: document.getElementById('cy'),
+      
+      elements: mah_elements,
+      
+      style: [
+
+        {
+          selector: 'node',
+          style: {
+            'label': 'data(id)',
+            'background-color': function(ele) {
+              return getColorForType(ele.data('type'));
+            }
+          }
+        },
+        {
+          selector: 'edge',
+          style: {
+            'width': 3,
+            'line-color': '#ccc',
+            'target-arrow-color': '#ccc',
+            'target-arrow-shape': 'triangle'
+          }
+        }
+      ],
+
+      layout: {
+        name: 'breadthfirst'
+      }
+    });
+
+    var removedNodes = {};
+    var removedEdges = {};
+
+    function getColorForType(type) {
+      switch(type) {
+        case 'index':
+          return 'red';
+        case 'key_value_patterns':
+          return 'blue';
+        case 'schema_variables':
+          return 'green';
+        default:
+          return 'gray';
+      }
+    }
+
+    $('.type-checkbox').change(function() {
+      var type = $(this).val();
+      if ($(this).is(':checked')) {
+        addNodesOfType(type);
+      } else {
+        removeNodesOfType(type);
+      }
+    });
+
+    $('.edge-checkbox').change(function() {
+      var action = $(this).val();
+      if (action === 'remove-edges' && !$(this).is(':checked')) {
+        removeEdges();
+      } else if (action === 'add-edges' && !$(this).is(':checked')) {
+        addEdges();
+      }
+    });
+
+    function addNodesOfType(type) {
+      if (removedNodes[type]) {
+        cy.add(removedNodes[type]);
+        delete removedNodes[type];
+        console.log('Nodes of type ' + type + ' added back to the graph');
+      }
+      if (removedEdges[type]) {
+        cy.add(removedEdges[type]);
+        delete removedEdges[type];
+        console.log('Edges connected to nodes of type ' + type + ' added back to the graph');
+      }
+    }
+
+    function removeNodesOfType(type) {
+      var nodesToRemove = cy.elements('node[type="' + type + '"]');
+      var edgesToRemove = nodesToRemove.connectedEdges();
+      removedNodes[type] = nodesToRemove.remove();
+      removedEdges[type] = edgesToRemove.remove();
+      console.log('Nodes of type ' + type + ' removed from the graph');
+      console.log('Edges connected to nodes of type ' + type + ' removed from the graph');
+    }
+
+    function removeEdges() {
+      var edgesToRemove = cy.edges();
+      removedEdges['all'] = edgesToRemove.remove();
+      console.log('All edges removed from the graph');
+    }
+
+    function addEdges() {
+      if (removedEdges['all']) {
+        cy.add(removedEdges['all']);
+        delete removedEdges['all'];
+        console.log('All edges added back to the graph');
+      }
+    }
+  });
+</script>
+</body>
+</html>
